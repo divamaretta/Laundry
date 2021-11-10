@@ -6,6 +6,11 @@ app.use(express.json())
 const models = require("../models/index")
 const users = models.users
 
+//panggil fungsi auth
+const {auth} = require("./login")
+
+//fungsi auth dijadikan middleware
+app.use(auth)
 
 //endpoint get data users 
 app.get("/",async(request, response)=>{
