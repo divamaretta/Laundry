@@ -1,52 +1,54 @@
 const express = require("express")
 const app = express()
 
-//membuat dan membaca
+// membaca request dari body dengan tipe json
 app.use(express.json())
 
-//panggil models
+// panggil models
 const models = require("../models/index")
 
-//panggil model "member"
+// panggil model "member"
 const member = models.member
 
-//panggil fungsi auth
+// panggil fungsi auth -> validasi token
 const {auth} = require("./login")
 
-//fungsi auth dijadikan middleware
+// fungsi auth dijadikan middleware
 app.use(auth)
 
-//endpoint for get all member
-app.get("/",async (request, response)=>{
+// endpoint for get all member
+app.get("/", async (request, response) => {
     let dataMember = await member.findAll()
 
     return response.json(dataMember)
 })
 
-//endpoint add new member
-app.post("/",(request, response)=>{
+// endpoint add new member
+app.post("/", (request, response) => {
     let newMember = {
         nama: request.body.nama,
         alamat: request.body.alamat,
         jenis_kelamin: request.body.jenis_kelamin,
         telepon: request.body.telepon
-
     }
 
     member.create(newMember)
-    .then(response.json({
-        message: "Data berhasil ditambahkan"
-    }))
+    .then(result => {
+        response.json({
+            message: `Data berhasil ditambahkan`
+        })
+    })
     .catch(error => {
         response.json({
             message: error.message
         })
     })
+
 })
 
-//endpoint update data member
-app.put("/:id_member", (request,response)=>{
-    //tampung data yang akan diubah
+// endpoint update data member
+app.put("/:id_member", (request, response) => {
+    // tampung data yg akan diubah
     let data = {
         nama: request.body.nama,
         alamat: request.body.alamat,
@@ -57,7 +59,8 @@ app.put("/:id_member", (request,response)=>{
     let parameter = {
         id_member: request.params.id_member
     }
-    //proses update
+
+    // proses update
     member.update(data, {where: parameter})
     .then(result => {
         return response.json({
@@ -65,26 +68,28 @@ app.put("/:id_member", (request,response)=>{
             data: result
         })
     })
-    .catch(error =>{
+    .catch(error => {
         return response.json({
             message: error.message
         })
     })
 })
-//endpoin hapus data member
-app.delete("/:id_member", (request,response)=>{
-    //tampung data yng akan dihapus
+
+// endpoint hapus data member
+app.delete("/:id_member", (request,response) => {
+    // tampung data yg akan dihapus
     let parameter = {
         id_member: request.params.id_member
     }
-    //proses hapus
+
+    // proses hapus
     member.destroy({where: parameter})
-    .then(result =>{
+    .then(result => {
         return response.json({
             message: `Data berhasil dihapus`
         })
     })
-    .catch(error =>{
+    .catch(error => {
         return response.json({
             message: error.message
         })

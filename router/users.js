@@ -17,6 +17,7 @@ app.get("/",async(request, response)=>{
     let dataUsers = await users.findAll()
     return response.json(dataUsers)
 })
+
 //endpoint insert new users
 app.post("/", (request,response)=> {
     let newUsers = {
@@ -35,7 +36,56 @@ app.post("/", (request,response)=> {
             return response.json({
                 message: error.message
             })
+        })
     })
+
+// endpoint update users
+app.put("/:id_user", (request,response) => {
+    let data = {
+        nama: request.body.nama,
+        username: request.body.username,
+        role: request.body.role
+    }
+    if (request.body.password) {
+        data.password = md5(request.body.password)
+    }
+    let parameter = {
+        id_user: request.params.id_user
+    }
+    users.update(data, {where: parameter})
+    .then(result => {
+        return response.json({
+            message: `Data berhasil diubah`,
+            data: result
+        })
+    })
+    .catch(error => {
+        return response.json({
+            message: error.message
+        })
     })
 })
+
+// endpoint hapus data user
+app.delete("/:id_user", (request,response) => {
+    
+    
+    let parameter = {
+        id_user: request.params.id_user
+    }
+    users.destroy({where: parameter})
+    .then(result => {
+        return response.json({
+            message: `Data berhasil dihapus`,
+            data: result
+        })
+    })
+    .catch(error => {
+        return response.json({
+            message: error.message
+        })
+    })
+  })
+})
+
 module.exports = app
